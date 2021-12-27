@@ -8,7 +8,19 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => 
     cb(null, `${uuid()}.${mime.extension(file.mimetype)}`) // 파일에 따라 저장되는 파일이름을 다르게 할 수 있다.
 })
-const upload = multer({ storage })
+const upload = multer({
+  storage, 
+  fileFilter: (req, file, cb) => {
+    if (["image/png",'image/jpeg'].includes(file.mimetype)) {
+      cb(new Error('invalid file types'), true)
+    } else {
+      cb(new Error('invalid file types'), false)
+    }
+  },
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  }
+})
 
 const app = express();
 const PORT = 5555;
