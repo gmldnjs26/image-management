@@ -1,0 +1,16 @@
+.progress-bar {
+  border: 1px solid black;
+  margin-bottom: 20px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.progress-bar div {
+  background-color: green;
+  padding-top: 10px;
+  height: 30px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  transition: 0.5s;
+}
