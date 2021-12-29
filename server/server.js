@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const multer = require('multer')
 const { v4: uuid } = require('uuid')
 const mime = require("mime-types")
@@ -24,6 +25,13 @@ const upload = multer({
 
 const app = express();
 const PORT = 5555;
+
+let corsOption = {
+  origin: 'http://localhost:3000',
+  credential: true
+}
+
+app.use(cors(corsOption))
 
 app.use("/uploads", express.static("uploads")) // 외부에서 uploads라는 폴더에 접근할 수 있게
 
