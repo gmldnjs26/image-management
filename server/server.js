@@ -1,8 +1,10 @@
+require("dotenv").config()
 const express = require('express')
 const cors = require('cors')
 const multer = require('multer')
 const { v4: uuid } = require('uuid')
 const mime = require("mime-types")
+const mongoose = require("mongoose")
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "./uploads"), // 파일에 따라 저장되는 폴더를 다르게 할 수 있다.
@@ -25,6 +27,11 @@ const upload = multer({
 
 const app = express();
 const PORT = 5555;
+
+mongoose
+  .connect(process.env.mongo_uri)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err))
 
 let corsOption = {
   origin: 'http://localhost:3000',
