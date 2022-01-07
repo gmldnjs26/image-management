@@ -22,6 +22,10 @@ const UploadForm = () => {
   const onSubmit = async (e) => {
     e.preventDefault(); // 새로고침 안함
     const formData = new FormData();
+    if(file == null) {
+      toast.info('파일을 등록해주세요')
+      return ;
+    }
     formData.append("image", file)
     try {
       const res = await axios.post("http://localhost:5555/upload", formData, {
