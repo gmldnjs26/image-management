@@ -28,7 +28,7 @@ const UploadForm = () => {
     }
     formData.append("image", file)
     try {
-      const res = await axios.post("http://localhost:5555/upload", formData, {
+      const res = await axios.post("http://localhost:5555/images", formData, {
         headers: {"Content-Type":"multipart/form-data"},
         onUploadProgress: (e) => {
           setPercent(Math.round((100 * e.loaded) / e.total));

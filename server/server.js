@@ -28,25 +28,26 @@ const upload = multer({
 
 const app = express();
 const PORT = 5555;
-
-mongoose
-  .connect(process.env.mongo_uri)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err))
-
 let corsOption = {
   origin: 'http://localhost:3000',
   credential: true
 }
 
-app.use(cors(corsOption))
-
-app.use("/uploads", express.static("uploads")) // 외부에서 uploads라는 폴더에 접근할 수 있게
-
-app.post('/upload',　upload.single("image"), async (req, res) => {
-  console.log(req.file)
-  await new Image({ key: req.file.filename, originalFileName: req.file.originalname }).save()
-  res.json({result: 'success'});
-})
-
-app.listen(PORT, () => console.log("Express Server listening on PORT " + PORT))
+mongoose
+  .connect(process.env.mongo_uri)
+  .then(() => {
+    console.log("MongoDB Connected")
+    app.use(cors(corsOption))
+    app.listen(PORT, () => console.log("Express Server listening on PORT " + PORT))
+    app.use("/uploads", express.static("uploads")) // 외부에서 uploads라는 폴더에 접근할 수 있게
+    app.post('/images',　upload.single("image"), async (req, res) => {
+      console.log(req.file)
+      const image = await new Image({ key: req.file.filename, originalFileName: req.file.originalname }).save()
+      res.json(image);
+    })
+    app.get("/images", async (req, res) => {
+      const images = await Image.find();
+      res.json(images)
+    })
+  })
+  .catch((err) => console.log(err))
