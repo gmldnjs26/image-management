@@ -5,6 +5,7 @@ const multer = require('multer')
 const { v4: uuid } = require('uuid')
 const mime = require("mime-types")
 const mongoose = require("mongoose")
+const Image = require('./models/image')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "./uploads"), // 파일에 따라 저장되는 폴더를 다르게 할 수 있다.
@@ -42,8 +43,9 @@ app.use(cors(corsOption))
 
 app.use("/uploads", express.static("uploads")) // 외부에서 uploads라는 폴더에 접근할 수 있게
 
-app.post('/upload',　upload.single("image"), (req, res) => {
-  console.log(req.file);
+app.post('/upload',　upload.single("image"), async (req, res) => {
+  console.log(req.file)
+  await new Image({ key: req.file.filename, originalFileName: req.file.originalname }).save()
   res.json({result: 'success'});
 })
 
