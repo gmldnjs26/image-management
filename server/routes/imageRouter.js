@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const imageRouter = Router()
-const Image = require('../models/image')
+const Image = require('../models/Image')
 const upload = require('../utils/imageUpload')
 
 imageRouter.post('/',　upload.single("image"), async (req, res) => {
