@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const userRouter = Router();
 const User = require("../models/User")
-const { hash } = require('bcryptjs')
+const { hash, compare } = require('bcryptjs')
 
 userRouter.post("/register", async (req, res) => {
   try {
@@ -18,7 +18,17 @@ userRouter.post("/register", async (req, res) => {
   } catch(err) {
     res.status(400).json({ message: err.message })
   }
-  
+})
+
+userRouter.post("/login", async(req, res) => {
+  try {
+    const user = await User.findOne({ username: req.body.username });
+    const isValid = await compare(req.body.password, user.password)
+    if(!isValid) throw new Error("Failed")
+    res.json({ message: "user validated" })
+  } catch(err) {
+    res.status(400).json({ message: err.message })
+  }
 })
  
 module.exports = { userRouter }
