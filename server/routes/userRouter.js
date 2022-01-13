@@ -22,17 +22,40 @@ userRouter.post("/register", async (req, res) => {
   }
 })
 
-userRouter.post("/login", async(req, res) => {
+// post -> patch 
+userRouter.patch("/login", async(req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
     const isValid = await compare(req.body.password, user.password)
     if(!isValid) throw new Error("Failed")
     user.sessions.push({ createdAt: new Date() })
     const session = user.sessions[user.sessions.length - 1]
-    res.json({ message: "user validated" })
+    await user.save()
+    res.json({
+      message: "user validated",
+      sessionId: session._id,
+      name: user.name
+    })
   } catch(err) {
     res.status(400).json({ message: err.message })
   }
 })
- 
+
+userRouter.patch("/logout", async(req, res) => {
+  try {
+    const { sessionid } = req.headers
+    const user = await User.findOne({ "sessions._id": sessionid })
+    if(!user) throw new Error("invalid sessionId")
+    await User.updateOne(
+      { _id: user.id },
+      { $pull: { sessions: { _id:sessionid } } }
+    )
+    res.json({ message: "user is logged out" })
+  } catch(err) {
+    res.status(400).json({
+      message: err.message
+    })
+  }
+})
+
 module.exports = { userRouter }
