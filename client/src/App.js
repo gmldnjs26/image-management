@@ -2,6 +2,7 @@ import React from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
+import ToolBar from './components/ToolBar';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MainPage from './pages/MainPage';
@@ -11,6 +12,7 @@ const App = () => {
   return (
     <div style={{ maxWidth: 600, margin: 'auto' }}>
       <ToastContainer />
+      <ToolBar />
       <Routes>
         <Route path="/" element={<MainPage/>} />
         <Route path="/auth/register" element={<RegisterPage/>} />
