@@ -44,7 +44,6 @@ userRouter.patch("/login", async(req, res) => {
 
 userRouter.patch("/logout", async(req, res) => {
   try {
-    const { sessionid } = req.headers
     if(!req.user) throw new Error("invalid session id")
     await User.updateOne(
       { _id: req.user.id },
