@@ -27,6 +27,7 @@ userRouter.post("/register", async (req, res) => {
 userRouter.patch("/login", async(req, res) => {
   try {
     const user = await User.findOne({ username: req.body.username });
+    if(!user) throw new Error("Failed")
     const isValid = await compare(req.body.password, user.password)
     if(!isValid) throw new Error("Failed")
     user.sessions.push({ createdAt: new Date() })
@@ -35,7 +36,8 @@ userRouter.patch("/login", async(req, res) => {
     res.json({
       message: "user validated",
       sessionId: session._id,
-      name: user.name
+      name: user.name,
+      userId: user._id
     })
   } catch(err) {
     res.status(400).json({ message: err.message })
@@ -51,6 +53,23 @@ userRouter.patch("/logout", async(req, res) => {
     )
     res.json({ message: "user is logged out" })
   } catch(err) {
+    res.status(400).json({
+      message: err.message
+    })
+  }
+})
+
+userRouter.get("/me", async(req, res) => {
+  try {
+    if(!req.user) throw new Error("권한이 없습니다.")
+    res.json({
+      message: "success",
+      sessionId: req.headers.sessionid,
+      name: req.user.name,
+      userId: req.user._id
+    })
+  } catch(err) {
+    console.error(err)
     res.status(400).json({
       message: err.message
     })
