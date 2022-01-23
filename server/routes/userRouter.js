@@ -76,4 +76,8 @@ userRouter.get("/me", async(req, res) => {
   }
 })
 
+userRouter.get('/me', (req, res) => {
+  // 본인의 사진들만 리턴
+})
+
 module.exports = { userRouter }
