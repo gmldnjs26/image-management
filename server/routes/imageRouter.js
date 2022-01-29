@@ -2,6 +2,11 @@ const { Router } = require("express");
 const imageRouter = Router();
 const Image = require("../models/Image");
 const upload = require("../utils/imageUpload");
+const fs = require("fs");
+const { promisify } = require("util");
+const mongoose = require("mongoose");
+
+const fileUnlink = promisify(fs.unlink); // unlink함수에 원래라면 콜백함수를 넣지만 프로미스화해서 async await형식으로 바꿀 수 있다.
 
 imageRouter.post("/", upload.single("image"), async (req, res) => {
   // 유저정보, public유무 확인
@@ -32,8 +37,23 @@ imageRouter.get("/", async (req, res) => {
   res.json(images);
 });
 
-imageRouter.delete("/:imageId", (req, res) => {
+imageRouter.delete("/:imageId", async (req, res) => {
   // 유저 권한 확인
+  try {
+    if (!req.user) throw new Error("권한이 없습니다.");
+    if (!mongoose.isValidObjectId(req.params.imageId)) {
+      throw new Error("올바르지 않은 이미지 아이디 입니다.");
+    }
+    const image = await Image.findOneAndDelete({ _id: req.params.imageId });
+    if (image) {
+      throw new Error("이미 삭제된 사진입니다.");
+    }
+    await fileUnlink(`./uploads/${image.key}`);
+    res.json({ message: "요청하신 이미지가 삭제되었습니다." });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: err.message });
+  }
   // 사진 삭제
 });
 
