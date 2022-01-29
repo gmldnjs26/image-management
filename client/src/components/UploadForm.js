@@ -1,61 +1,61 @@
-import React, { useState, useContext }  from "react";
-import axios from 'axios'
-import { toast } from 'react-toastify'
-import './UploadForm.css'
+import React, { useState, useContext } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "./UploadForm.css";
 import ProgressBar from "./ProgressBar";
-import { ImageContext } from '../context/ImageContext'
+import { ImageContext } from "../context/ImageContext";
 
 const UploadForm = () => {
-  const defaultFileName = "이미지 파일을 업로드 해주세요"
+  const defaultFileName = "이미지 파일을 업로드 해주세요";
   const [file, setFile] = useState(null);
-  const [imgSrc, setImgSrc] = useState(null)
+  const [imgSrc, setImgSrc] = useState(null);
   const [fileName, setFileName] = useState(defaultFileName);
   const [percent, setPercent] = useState(0);
-  const [images, setImages] = useContext(ImageContext)
+  const [images, setImages] = useContext(ImageContext);
 
   const imageSelectHandler = (e) => {
     const imageFile = e.target.files[0];
-    setFile(imageFile)
-    setFileName(imageFile.name)
+    setFile(imageFile);
+    setFileName(imageFile.name);
     const fileReader = new FileReader();
-    fileReader.readAsDataURL(imageFile)
-    fileReader.onload = e => setImgSrc(e.target.result)
-  }
+    fileReader.readAsDataURL(imageFile);
+    fileReader.onload = (e) => setImgSrc(e.target.result);
+  };
   const onSubmit = async (e) => {
     e.preventDefault(); // 새로고침 안함
     const formData = new FormData();
-    if(file == null) {
-      toast.info('파일을 등록해주세요')
-      return ;
+    if (file == null) {
+      toast.info("파일을 등록해주세요");
+      return;
     }
-    formData.append("image", file)
+    formData.append("image", file);
     try {
       const res = await axios.post("http://localhost:5555/images", formData, {
-        headers: {"Content-Type":"multipart/form-data"},
+        headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (e) => {
           setPercent(Math.round((100 * e.loaded) / e.total));
-        }
-      })
+        },
+      });
       setTimeout(() => {
-        setPercent(0)
+        setPercent(0);
       }, 3000);
-      setFileName(defaultFileName)
-      setImgSrc(null)
-      setImages([...images, res.data])
-      toast.success(res.data.result)
-    } catch(err) {
-      setFileName(defaultFileName)
-      setImgSrc(null)
-      toast.error(err.message)
+      setFileName(defaultFileName);
+      setImgSrc(null);
+      setImages([...images, res.data]);
+      toast.success(res.data.result);
+    } catch (err) {
+      setFileName(defaultFileName);
+      setImgSrc(null);
+      toast.error(err.response.data.message);
     }
-  }
+  };
   return (
     <form onSubmit={onSubmit}>
-      <img className={`image-preview ${imgSrc ? '' : 'hidden'}`} src={imgSrc} />
+      <img className={`image-preview ${imgSrc ? "" : "hidden"}`} src={imgSrc} />
       <ProgressBar percent={percent} />
       <div className="file-dropper">
         {fileName}
-        <input 
+        <input
           id="image"
           accept="image/*"
           type="file"
@@ -64,7 +64,7 @@ const UploadForm = () => {
       </div>
       <button type="submit">제출</button>
     </form>
-  )
-}
+  );
+};
 
-export default UploadForm
+export default UploadForm;
