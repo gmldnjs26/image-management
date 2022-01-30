@@ -11,7 +11,8 @@ const UploadForm = () => {
   const [imgSrc, setImgSrc] = useState(null);
   const [fileName, setFileName] = useState(defaultFileName);
   const [percent, setPercent] = useState(0);
-  const [images, setImages] = useContext(ImageContext);
+  const { images, setImages, myImages, setMyImages } = useContext(ImageContext);
+  const [isPublic, setIsPublic] = useState(true);
 
   const imageSelectHandler = (e) => {
     const imageFile = e.target.files[0];
@@ -28,6 +29,7 @@ const UploadForm = () => {
       toast.info("파일을 등록해주세요");
       return;
     }
+    formData.append("public", isPublic);
     formData.append("image", file);
     try {
       const res = await axios.post("http://localhost:5555/images", formData, {
@@ -41,7 +43,11 @@ const UploadForm = () => {
       }, 3000);
       setFileName(defaultFileName);
       setImgSrc(null);
-      setImages([...images, res.data]);
+      if (isPublic) {
+        setImages([...images, res.data]);
+      } else {
+        setMyImages([...myImages, res.data]);
+      }
       toast.success(res.data.result);
     } catch (err) {
       setFileName(defaultFileName);
@@ -51,7 +57,11 @@ const UploadForm = () => {
   };
   return (
     <form onSubmit={onSubmit}>
-      <img className={`image-preview ${imgSrc ? "" : "hidden"}`} src={imgSrc} />
+      <img
+        alt=""
+        className={`image-preview ${imgSrc ? "" : "hidden"}`}
+        src={imgSrc}
+      />
       <ProgressBar percent={percent} />
       <div className="file-dropper">
         {fileName}
@@ -62,6 +72,13 @@ const UploadForm = () => {
           onChange={imageSelectHandler}
         />
       </div>
+      <input
+        type="checkbox"
+        id="public-check"
+        value={!isPublic}
+        onChange={() => setIsPublic(!isPublic)}
+      />
+      <label htmlFor="public-check">비공개</label>
       <button type="submit">제출</button>
     </form>
   );
