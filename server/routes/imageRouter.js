@@ -57,14 +57,42 @@ imageRouter.delete("/:imageId", async (req, res) => {
   // 사진 삭제
 });
 
-imageRouter.patch("/:imageId/like", (req, res) => {
+imageRouter.patch("/:imageId/like", async (req, res) => {
   // 유저 권한 확인
   // like 중복 안되도록 확인
+  try {
+    if (!req.user) throw new Error("권한이 없습니다.");
+    if (!mongoose.isValidObjectId(req.params.imageId))
+      throw new Error("올바르지 않은 아이디 입니다.");
+
+    const image = await Image.findOneAndUpdate(
+      { _id: req.params.imageId },
+      { $addToSet: { likes: req.user.id } }, // addToSet Set과 같이 알아서 중복일 경우에는 칼람값을 추가하지 않는다.
+      { new: true } // 업데이트 된 이후의 image를 받는다
+    );
+    res.json(image);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
-imageRouter.patch("/:imageId/unlike", (req, res) => {
+imageRouter.patch("/:imageId/unlike", async (req, res) => {
   // 유저 권한 확인
   // like 중복 취소 안되도록 확인
+  try {
+    if (!req.user) throw new Error("권한이 없습니다.");
+    if (!mongoose.isValidObjectId(req.params.imageId))
+      throw new Error("올바르지 않은 아이디 입니다.");
+
+    const image = await Image.findOneAndUpdate(
+      { _id: req.params.imageId },
+      { $pull: { likes: req.user.id } },
+      { new: true }
+    );
+    res.json(image);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 module.exports = imageRouter;
