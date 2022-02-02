@@ -32,7 +32,7 @@ const ImageList = () => {
           {isPublic ? "개인" : "공개"} 사진보기
         </button>
       </div>
-      <div class="img-list-container">{imgList}</div>
+      <div className="img-list-container">{imgList}</div>
     </div>
   );
 };

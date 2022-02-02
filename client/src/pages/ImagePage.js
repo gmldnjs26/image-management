@@ -14,7 +14,7 @@ const ImagePage = () => {
     images.find((image) => image._id === imageId) ||
     myImages.find((image) => image._id === imageId);
   useEffect(() => {
-    if (me && image && images.likes.includes(me.userId)) setHasLiked(true);
+    if (me && image && image.likes.includes(me.userId)) setHasLiked(true);
   }, [me, image]);
 
   const updateImages = (images, image) => {
@@ -26,12 +26,12 @@ const ImagePage = () => {
 
   const onSubmit = async () => {
     const result = await axios.patch(
-      `http://localhost:5555/images/${imageId}${hasLiked ? "unlike" : "like"}`
+      `http://localhost:5555/images/${imageId}/${hasLiked ? "unlike" : "like"}`
     );
     if (result.data.public) {
       setImages(updateImages(images, result.data));
     } else {
-      setMyImages(updateImages(images, result.data));
+      setMyImages(updateImages(myImages, result.data));
     }
     setHasLiked(!hasLiked);
   };
@@ -42,7 +42,7 @@ const ImagePage = () => {
       <h3>Image Page - {imageId}</h3>
       <img alt={imageId} src={`http://localhost:5555/uploads/${image.key}`} />
       <span>좋아요 {image.likes.length}</span>
-      <button onClick={onSubmit} style={{ float: "right" }}>
+      <button onClick={onSubmit} style={{ float: "right", width: "80px" }}>
         {hasLiked ? "좋아요 취소" : "좋아요"}
       </button>
     </div>
