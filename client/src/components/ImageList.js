@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 import { ImageContext } from "../context/ImageContext";
 import "./ImageList.css";
 
@@ -6,11 +7,13 @@ const ImageList = () => {
   const { images, myImages, isPublic, setIsPublic } = useContext(ImageContext);
 
   const imgList = (isPublic ? images : myImages).map((image) => (
-    <img
-      key={image.key}
-      alt=""
-      src={`http://localhost:5555/uploads/${image.key}`}
-    />
+    <Link key={image.key} to={`/images/${image._id}`}>
+      <img
+        key={image.key}
+        alt=""
+        src={`http://localhost:5555/uploads/${image.key}`}
+      />
+    </Link>
   ));
   return (
     <div>
