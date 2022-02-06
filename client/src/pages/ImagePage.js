@@ -57,7 +57,11 @@ const ImagePage = () => {
   return (
     <div>
       <h3>Image Page - {imageId}</h3>
-      <img alt={imageId} src={`http://localhost:5555/uploads/${image.key}`} />
+      <img
+        alt={imageId}
+        src={`http://localhost:5555/uploads/${image.key}`}
+        style={{ width: "100%", height: "auto" }}
+      />
       <span>좋아요 {image.likes.length}</span>
       <div
         style={{
@@ -66,17 +70,14 @@ const ImagePage = () => {
           marginTop: "10px",
         }}
       >
+        <button onClick={onSubmit} style={{ width: "80px" }}>
+          {hasLiked ? "좋아요 취소" : "좋아요"}
+        </button>
         {me && image.user._id === me.userId && (
-          <button
-            style={{ float: "right", width: "80px" }}
-            onClick={deleteHandler}
-          >
+          <button style={{ width: "80px" }} onClick={deleteHandler}>
             삭제
           </button>
         )}
-        <button onClick={onSubmit} style={{ float: "right", width: "80px" }}>
-          {hasLiked ? "좋아요 취소" : "좋아요"}
-        </button>
       </div>
     </div>
   );
