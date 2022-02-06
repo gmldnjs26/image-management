@@ -41,7 +41,9 @@ const ImagePage = () => {
   const deleteHandler = async () => {
     try {
       if (!window.confirm("삭제하시겠습니까?")) return;
-      const result = await axios.delete(`/images/${imageId}`);
+      const result = await axios.delete(
+        `http://localhost:5555/images/${imageId}`
+      );
       toast.success(result.data.message);
       setImages(images.filter((image) => image._id !== imageId));
       setMyImages(myImages.filter((image) => image._id !== imageId));
@@ -57,17 +59,25 @@ const ImagePage = () => {
       <h3>Image Page - {imageId}</h3>
       <img alt={imageId} src={`http://localhost:5555/uploads/${image.key}`} />
       <span>좋아요 {image.likes.length}</span>
-      {me && image.user._id === me.userId && (
-        <button
-          style={{ float: "right", marginLeft: 10 }}
-          onClick={deleteHandler}
-        >
-          삭제
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginTop: "10px",
+        }}
+      >
+        {me && image.user._id === me.userId && (
+          <button
+            style={{ float: "right", width: "80px" }}
+            onClick={deleteHandler}
+          >
+            삭제
+          </button>
+        )}
+        <button onClick={onSubmit} style={{ float: "right", width: "80px" }}>
+          {hasLiked ? "좋아요 취소" : "좋아요"}
         </button>
-      )}
-      <button onClick={onSubmit} style={{ float: "right", width: "80px" }}>
-        {hasLiked ? "좋아요 취소" : "좋아요"}
-      </button>
+      </div>
     </div>
   );
 };

@@ -45,7 +45,7 @@ imageRouter.delete("/:imageId", async (req, res) => {
       throw new Error("올바르지 않은 이미지 아이디 입니다.");
     }
     const image = await Image.findOneAndDelete({ _id: req.params.imageId });
-    if (image) {
+    if (!image) {
       throw new Error("이미 삭제된 사진입니다.");
     }
     await fileUnlink(`./uploads/${image.key}`);
