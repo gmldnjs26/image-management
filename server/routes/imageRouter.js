@@ -38,8 +38,26 @@ imageRouter.post("/", upload.array("image", 5), async (req, res) => {
 });
 imageRouter.get("/", async (req, res) => {
   // public 이미지 제공
-  const images = await Image.find({ public: true });
-  res.json(images);
+  try {
+    const { lastId } = req.query;
+    if (lastId && !mongoose.isValidObjectId(lastId))
+      throw new Error("invalid lastId");
+    const images = await Image.find(
+      lastId
+        ? {
+            public: true,
+            _id: { $lt: lastId },
+          }
+        : {
+            public: true,
+          }
+    )
+      .sort({ _id: -1 })
+      .limit(20);
+    res.json(images);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 imageRouter.delete("/:imageId", async (req, res) => {
