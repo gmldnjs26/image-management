@@ -4,7 +4,15 @@ import { ImageContext } from "../context/ImageContext";
 import "./ImageList.css";
 
 const ImageList = () => {
-  const { images, myImages, isPublic, setIsPublic } = useContext(ImageContext);
+  const {
+    images,
+    myImages,
+    isPublic,
+    setIsPublic,
+    loaderMoreImages,
+    imageLoading,
+    imageError,
+  } = useContext(ImageContext);
 
   const imgList = (isPublic ? images : myImages).map((image) => (
     <Link key={image.key} to={`/images/${image._id}`}>
@@ -33,6 +41,11 @@ const ImageList = () => {
         </button>
       </div>
       <div className="img-list-container">{imgList}</div>
+      {imageLoading ? (
+        <div>Loading..</div>
+      ) : (
+        <button onClick={() => loaderMoreImages()}>이미지 더보기</button>
+      )}
     </div>
   );
 };

@@ -8,14 +8,22 @@ export const ImageProvider = (prop) => {
   const [images, setImages] = useState([]);
   const [myImages, setMyImages] = useState([]);
   const [isPublic, setIsPublic] = useState(true);
+  const [imageUrl, setImageUrl] = useState("/images");
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const [me] = useContext(AuthContext); // index.js의 ImageProvider가 AuthProvider 하위에 있으니 불러올 수 있다.
 
   useEffect(() => {
+    setImageLoading(true);
     axios
-      .get("http://localhost:5555/images")
-      .then((result) => setImages(result.data))
-      .catch((err) => console.log(err));
-  }, []);
+      .get(`http://localhost:5555${imageUrl}`)
+      .then((result) => setImages((prevData) => [...prevData, ...result.data]))
+      .catch((err) => {
+        setImageError(true);
+        console.log(err);
+      })
+      .finally(() => setImageLoading(false));
+  }, [imageUrl]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -31,6 +39,12 @@ export const ImageProvider = (prop) => {
     }, 0);
   }, [me]);
 
+  const loaderMoreImages = () => {
+    if (images.length === 0) return;
+    const lastImageId = images[images.length - 1]._id;
+    setImageUrl(`/images?lastId=${lastImageId}`);
+  };
+
   return (
     <ImageContext.Provider
       value={{
@@ -40,6 +54,9 @@ export const ImageProvider = (prop) => {
         setMyImages,
         isPublic,
         setIsPublic,
+        loaderMoreImages,
+        imageLoading,
+        imageError,
       }}
     >
       {prop.children}
