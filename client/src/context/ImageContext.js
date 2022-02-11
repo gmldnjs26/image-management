@@ -40,7 +40,7 @@ export const ImageProvider = (prop) => {
           .catch((err) => console.error(err));
       } else {
         setMyImages([]);
-        setIsPublic(false);
+        setIsPublic(true);
       }
     }, 0);
   }, [me]);

@@ -44,7 +44,7 @@ const ImageList = () => {
         <Link
           key={image.key}
           to={`/images/${image._id}`}
-          ref={index === myImages.length - 1 ? elementRef : undefined}
+          ref={index === myImages.length - 5 ? elementRef : undefined}
         >
           <img
             key={image.key}
