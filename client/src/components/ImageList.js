@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ImageContext } from "../context/ImageContext";
 import "./ImageList.css";
@@ -14,15 +14,45 @@ const ImageList = () => {
     imageError,
   } = useContext(ImageContext);
 
-  const imgList = (isPublic ? images : myImages).map((image) => (
-    <Link key={image.key} to={`/images/${image._id}`}>
-      <img
-        key={image.key}
-        alt=""
-        src={`http://localhost:5555/uploads/${image.key}`}
-      />
-    </Link>
-  ));
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    if (!elementRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      console.log("intersection", entry.isIntersecting);
+      if (entry.isIntersecting) loaderMoreImages();
+    });
+    observer.observe(elementRef.current);
+    return () => observer.disconnect();
+  }, [loaderMoreImages]);
+
+  const imgList = isPublic
+    ? images.map((image, index) => (
+        <Link
+          key={image.key}
+          to={`/images/${image._id}`}
+          ref={index === images.length - 5 ? elementRef : undefined}
+        >
+          <img
+            key={image.key}
+            alt=""
+            src={`http://localhost:5555/uploads/${image.key}`}
+          />
+        </Link>
+      ))
+    : myImages.map((image, index) => (
+        <Link
+          key={image.key}
+          to={`/images/${image._id}`}
+          ref={index === myImages.length - 1 ? elementRef : undefined}
+        >
+          <img
+            key={image.key}
+            alt=""
+            src={`http://localhost:5555/uploads/${image.key}`}
+          />
+        </Link>
+      ));
   return (
     <div>
       <h3>ImageList({isPublic ? "공개사진" : "개인사진"})</h3>
