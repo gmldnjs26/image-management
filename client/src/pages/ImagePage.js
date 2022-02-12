@@ -8,13 +8,11 @@ import { toast } from "react-toastify";
 const ImagePage = () => {
   const navigate = useNavigate();
   const { imageId } = useParams();
-  const { images, myImages, setImages, setMyImages } = useContext(ImageContext);
+  const { images, setImages, setMyImages } = useContext(ImageContext);
   const [me] = useContext(AuthContext);
   const [hasLiked, setHasLiked] = useState(false);
 
-  const image =
-    images.find((image) => image._id === imageId) ||
-    myImages.find((image) => image._id === imageId);
+  const image = images.find((image) => image._id === imageId);
   useEffect(() => {
     if (me && image && image.likes.includes(me.userId)) setHasLiked(true);
   }, [me, image]);
@@ -32,9 +30,8 @@ const ImagePage = () => {
     );
     if (result.data.public) {
       setImages(updateImages(images, result.data));
-    } else {
-      setMyImages(updateImages(myImages, result.data));
     }
+    setMyImages(updateImages(images, result.data));
     setHasLiked(!hasLiked);
   };
 
@@ -46,7 +43,7 @@ const ImagePage = () => {
       );
       toast.success(result.data.message);
       setImages(images.filter((image) => image._id !== imageId));
-      setMyImages(myImages.filter((image) => image._id !== imageId));
+      setMyImages(images.filter((image) => image._id !== imageId));
       navigate("/");
     } catch (err) {
       toast.error(err.message);
