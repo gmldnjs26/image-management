@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ImageContext } from "../context/ImageContext";
 import "./ImageList.css";
@@ -6,15 +6,25 @@ import "./ImageList.css";
 const ImageList = () => {
   const {
     images,
-    myImages,
     isPublic,
     setIsPublic,
-    loaderMoreImages,
     imageLoading,
     imageError,
+    setImageUrl,
   } = useContext(ImageContext);
 
   const elementRef = useRef(null);
+
+  const loaderMoreImages = useCallback(() => {
+    const lastImageId =
+      images.length > 0 ? images[images.length - 1]._id : null;
+    if (imageLoading || !lastImageId) return;
+    setImageUrl(
+      isPublic
+        ? `/images?lastId=${lastImageId}`
+        : `/users/me/images?lastId=${lastImageId}`
+    );
+  }, [images, imageLoading, isPublic, setImageUrl]);
 
   useEffect(() => {
     if (!elementRef.current) return;
@@ -26,33 +36,19 @@ const ImageList = () => {
     return () => observer.disconnect();
   }, [loaderMoreImages]);
 
-  const imgList = isPublic
-    ? images.map((image, index) => (
-        <Link
-          key={image.key}
-          to={`/images/${image._id}`}
-          ref={index === images.length - 5 ? elementRef : undefined}
-        >
-          <img
-            key={image.key}
-            alt=""
-            src={`http://localhost:5555/uploads/${image.key}`}
-          />
-        </Link>
-      ))
-    : myImages.map((image, index) => (
-        <Link
-          key={image.key}
-          to={`/images/${image._id}`}
-          ref={index === myImages.length - 5 ? elementRef : undefined}
-        >
-          <img
-            key={image.key}
-            alt=""
-            src={`http://localhost:5555/uploads/${image.key}`}
-          />
-        </Link>
-      ));
+  const imgList = images.map((image, index) => (
+    <Link
+      key={image.key}
+      to={`/images/${image._id}`}
+      ref={index === images.length - 5 ? elementRef : undefined}
+    >
+      <img
+        key={image.key}
+        alt=""
+        src={`http://localhost:5555/uploads/${image.key}`}
+      />
+    </Link>
+  ));
   return (
     <div>
       <h3>ImageList({isPublic ? "공개사진" : "개인사진"})</h3>

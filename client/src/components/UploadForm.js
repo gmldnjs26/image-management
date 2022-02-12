@@ -6,7 +6,7 @@ import ProgressBar from "./ProgressBar";
 import { ImageContext } from "../context/ImageContext";
 
 const UploadForm = () => {
-  const { images, setImages, myImages, setMyImages } = useContext(ImageContext);
+  const { images, setImages } = useContext(ImageContext);
   const [files, setFiles] = useState(null);
 
   const [previews, setPreviews] = useState([]);
@@ -54,11 +54,7 @@ const UploadForm = () => {
         setPercent(0);
       }, 3000);
       setPreviews([]);
-      if (isPublic) {
-        setImages([...images, ...res.data]);
-      } else {
-        setMyImages([...myImages, ...res.data]);
-      }
+      setImages([...images, ...res.data]);
       toast.success(res.data.result);
     } catch (err) {
       setPreviews([]);

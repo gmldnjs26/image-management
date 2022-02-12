@@ -3,7 +3,7 @@ import React, {
   useState,
   useEffect,
   useContext,
-  useCallback,
+  useRef,
 } from "react";
 import axios from "axios";
 import { AuthContext } from "./AuthContext";
@@ -18,18 +18,27 @@ export const ImageProvider = (prop) => {
   const [imageLoading, setImageLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [me] = useContext(AuthContext); // index.js의 ImageProvider가 AuthProvider 하위에 있으니 불러올 수 있다.
+  const pastImageUrlRef = useRef();
 
   useEffect(() => {
+    if (pastImageUrlRef.current === imageUrl) return;
     setImageLoading(true);
     axios
       .get(`http://localhost:5555${imageUrl}`)
-      .then((result) => setImages((prevData) => [...prevData, ...result.data]))
+      .then((result) =>
+        isPublic
+          ? setImages((prevData) => [...prevData, ...result.data])
+          : setMyImages((prevData) => [...prevData, ...result.data])
+      )
       .catch((err) => {
         setImageError(true);
         console.log(err);
       })
-      .finally(() => setImageLoading(false));
-  }, [imageUrl]);
+      .finally(() => {
+        setImageLoading(false);
+        pastImageUrlRef.current = imageUrl;
+      });
+  }, [imageUrl, isPublic]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -45,25 +54,16 @@ export const ImageProvider = (prop) => {
     }, 0);
   }, [me]);
 
-  const lastImageId = images.length > 0 ? images[images.length - 1]._id : null;
-
-  const loaderMoreImages = useCallback(() => {
-    if (imageLoading || !lastImageId) return;
-    setImageUrl(`/images?lastId=${lastImageId}`);
-  }, [lastImageId, imageLoading]);
-
   return (
     <ImageContext.Provider
       value={{
-        images,
-        setImages,
-        myImages,
-        setMyImages,
+        images: isPublic ? images : myImages,
+        setImages: isPublic ? setImages : setMyImages,
         isPublic,
         setIsPublic,
-        loaderMoreImages,
         imageLoading,
         imageError,
+        setImageUrl,
       }}
     >
       {prop.children}
