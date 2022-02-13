@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { ImageContext } from "../context/ImageContext";
@@ -11,8 +11,20 @@ const ImagePage = () => {
   const { images, setImages, setMyImages } = useContext(ImageContext);
   const [me] = useContext(AuthContext);
   const [hasLiked, setHasLiked] = useState(false);
+  const [image, setImage] = useState();
 
-  const image = images.find((image) => image._id === imageId);
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5555/images/${imageId}`)
+      .then((result) => {
+        console.log(result);
+        setImage(result.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [imageId]);
+
   useEffect(() => {
     if (me && image && image.likes.includes(me.userId)) setHasLiked(true);
   }, [me, image]);
