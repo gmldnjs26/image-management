@@ -60,6 +60,25 @@ imageRouter.get("/", async (req, res) => {
   }
 });
 
+imageRouter.get("/:imageId", async (req, res) => {
+  // 유저 권한 확인
+  try {
+    if (!req.user) throw new Error("권한이 없습니다.");
+    if (!mongoose.isValidObjectId(req.params.imageId)) {
+      throw new Error("올바르지 않은 이미지 아이디 입니다.");
+    }
+    const image = await Image.findOne({ _id: req.params.imageId });
+    if (!image) throw new Error("존재하지 않는 사진입니다.");
+    // _id는 객체로 반환 .id는 몽구스에 string변환해서 반환
+    if (!image.public && (!req.user || req.user.id !== image.user.id))
+      throw new Error("권한이 없습니다.");
+    res.json(image);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: err.message });
+  }
+  // 사진 삭제
+});
 imageRouter.delete("/:imageId", async (req, res) => {
   // 유저 권한 확인
   try {
