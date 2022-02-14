@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { ImageContext } from "../context/ImageContext";
@@ -21,6 +21,7 @@ const ImagePage = () => {
         setImage(result.data);
       })
       .catch((err) => {
+        toast.error(err.response.data.message);
         console.error(err);
       });
   }, [imageId]);
@@ -40,6 +41,7 @@ const ImagePage = () => {
     const result = await axios.patch(
       `http://localhost:5555/images/${imageId}/${hasLiked ? "unlike" : "like"}`
     );
+    console.log(result);
     if (result.data.public) {
       setImages(updateImages(images, result.data));
     }
