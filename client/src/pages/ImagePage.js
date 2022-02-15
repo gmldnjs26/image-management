@@ -17,7 +17,6 @@ const ImagePage = () => {
     axios
       .get(`http://localhost:5555/images/${imageId}`)
       .then((result) => {
-        console.log(result);
         setImage(result.data);
       })
       .catch((err) => {
@@ -41,11 +40,11 @@ const ImagePage = () => {
     const result = await axios.patch(
       `http://localhost:5555/images/${imageId}/${hasLiked ? "unlike" : "like"}`
     );
-    console.log(result);
     if (result.data.public) {
       setImages(updateImages(images, result.data));
     }
     setMyImages(updateImages(images, result.data));
+    setImage(result.data);
     setHasLiked(!hasLiked);
   };
 
