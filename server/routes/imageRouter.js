@@ -5,6 +5,7 @@ const upload = require("../utils/imageUpload");
 const fs = require("fs");
 const { promisify } = require("util");
 const mongoose = require("mongoose");
+const { s3 } = require("../aws");
 
 const fileUnlink = promisify(fs.unlink); // unlink함수에 원래라면 콜백함수를 넣지만 프로미스화해서 async await형식으로 바꿀 수 있다.
 
@@ -90,7 +91,13 @@ imageRouter.delete("/:imageId", async (req, res) => {
     if (!image) {
       throw new Error("이미 삭제된 사진입니다.");
     }
-    await fileUnlink(`./uploads/${image.key}`);
+    // await fileUnlink(`./uploads/${image.key}`);
+    s3.deleteObject(
+      { Bucket: "first-image-storage", Key: `raw/${image.key}` },
+      (err) => {
+        if (err) throw err;
+      }
+    );
     res.json({ message: "요청하신 이미지가 삭제되었습니다." });
   } catch (err) {
     console.error(err);

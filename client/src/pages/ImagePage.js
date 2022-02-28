@@ -71,7 +71,7 @@ const ImagePage = () => {
       <h3>Image Page - {imageId}</h3>
       <img
         alt={imageId}
-        src={`http://localhost:5555/uploads/${image.key}`}
+        src={`https://first-image-storage.s3.ap-northeast-1.amazonaws.com/raw/${image.key}`}
         style={{ width: "100%", height: "auto" }}
       />
       <span>좋아요 {image.likes.length}</span>
