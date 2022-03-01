@@ -22,7 +22,8 @@ const getSignedUrl = (key) => {
         ],
       },
       (err, data) => {
-        if (err) throw err;
+        if (err) reject(err);
+        else resovle(data);
         return;
       }
     );
