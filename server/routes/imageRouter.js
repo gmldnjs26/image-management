@@ -5,9 +5,30 @@ const upload = require("../utils/imageUpload");
 const fs = require("fs");
 const { promisify } = require("util");
 const mongoose = require("mongoose");
-const { s3 } = require("../aws");
+const { s3, getSignedUrl } = require("../aws");
+const { v4: uuid } = require("uuid");
+const mime = require("mime-types");
 
 const fileUnlink = promisify(fs.unlink); // unlink함수에 원래라면 콜백함수를 넣지만 프로미스화해서 async await형식으로 바꿀 수 있다.
+
+imageRouter.post("/presigned", async (req, res) => {
+  try {
+    if (!req.user) throw new Error("권한이 없습니다.");
+    const { contentTypes } = req.body;
+    if (!Array.isArray(contentTypes)) throw new Error("invalid contentTypes");
+    const presignedData = await Promise.all(
+      contentTypes.map((contentType) => {
+        const imageKey = `${uuid()}.${mime.extension(contentType)}`;
+        const key = `raw/${imageKey}`;
+        const presigned = await getSignedUrl({ key });
+        return { imageKey, presigned };
+      })
+    );
+    return res.json(presignedData);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 imageRouter.post("/", upload.array("image", 5), async (req, res) => {
   // 유저정보, public유무 확인
