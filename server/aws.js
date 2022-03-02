@@ -5,6 +5,7 @@ const aws = require("aws-sdk");
 const s3 = new aws.S3({
   secretAccessKey: AWS_SECRET_KEY,
   accessKeyId: AWS_ACCESS_KEY,
+  region: "ap-northeast-1",
 });
 
 const getSignedUrl = (key) => {

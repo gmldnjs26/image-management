@@ -17,10 +17,10 @@ imageRouter.post("/presigned", async (req, res) => {
     const { contentTypes } = req.body;
     if (!Array.isArray(contentTypes)) throw new Error("invalid contentTypes");
     const presignedData = await Promise.all(
-      contentTypes.map((contentType) => {
+      contentTypes.map(async (contentType) => {
         const imageKey = `${uuid()}.${mime.extension(contentType)}`;
         const key = `raw/${imageKey}`;
-        const presigned = await getSignedUrl({ key });
+        const presigned = await getSignedUrl(key);
         return { imageKey, presigned };
       })
     );
