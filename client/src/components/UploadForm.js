@@ -35,6 +35,43 @@ const UploadForm = () => {
     );
     setPreviews(imagePreviews);
   };
+
+  const onSubmitV2 = async (e) => {
+    e.preventDefault();
+    try {
+      const presignedData = await axios.post(
+        "http://localhost:5555/images/presigned",
+        {
+          contentTypes: [...files].map((file) => file.type),
+        }
+      );
+
+      const result = await Promise.all(
+        [...files].map((file, index) => {
+          const { presigned } = presignedData.data[index];
+          const formData = new FormData();
+          for (const key in presigned.fields) {
+            formData.append(key, presigned.fields[key]);
+          }
+          formData.append("Content-Type", file.type);
+          formData.append("file", file);
+          return axios.post(presigned.url, formData);
+        })
+      );
+
+      toast.success("Upload Success!");
+      setTimeout(() => {
+        setPercent(0);
+        setPreviews([]);
+      }, 3000);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response.data.message);
+      setPercent(0);
+      setPreviews([]);
+    }
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault(); // 새로고침 안함
     const formData = new FormData();
@@ -53,13 +90,14 @@ const UploadForm = () => {
       });
       setTimeout(() => {
         setPercent(0);
+        setPreviews([]);
       }, 3000);
-      setPreviews([]);
       if (isPublic) setImages([...res.data, ...images]);
       setMyImages([...res.data, ...images]);
       inputRef.current.value = null;
       toast.success(res.data.result);
     } catch (err) {
+      setPercent(0);
       setPreviews([]);
       toast.error(err.response.data.message);
     }
@@ -79,7 +117,7 @@ const UploadForm = () => {
       : previews.reduce((pre, cur) => pre + " " + cur.fileName, "");
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmitV2}>
       <div className="image-priview-container">{previewImages}</div>
       <ProgressBar percent={percent} />
       <div className="file-dropper">
