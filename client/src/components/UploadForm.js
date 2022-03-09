@@ -59,6 +59,16 @@ const UploadForm = () => {
         })
       );
 
+      const res = await axios.post("http://localhost:5555/images", {
+        images: [...files].map((file, index) => ({
+          imageKey: presignedData.data[index].imageKey,
+          originalname: file.originalname,
+        })),
+        public: isPublic,
+      });
+      if (isPublic) setImages([...res.data, ...images]);
+      setMyImages([...res.data, ...images]);
+
       toast.success("Upload Success!");
       setTimeout(() => {
         setPercent(0);
