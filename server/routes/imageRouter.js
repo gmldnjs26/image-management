@@ -29,35 +29,61 @@ imageRouter.post("/presigned", async (req, res) => {
     console.log(err);
   }
 });
-
 imageRouter.post("/", upload.array("image", 5), async (req, res) => {
   // 유저정보, public유무 확인
   try {
     if (!req.user) throw new Error("권한이 없습니다.");
-    const result = await Promise.all(
-      req.files.map(async (file) => {
-        const image = await new Image({
-          user: {
-            // id로 불러내면 _id로 저장된 ObjectId에서 자동으로 String형태로 전환된다.
-            // 근데 _id는 ObjectId가 type인데 string으로 저장해도 되냐? 몽구스가 알아서 처리해준다
-            // 그리고 ObjectId로 안하면 string으로 되버리기 때문에 용량이 더 커지게 된다 ObjectId가 더 효율적
-            _id: req.user.id,
-            name: req.user.name,
-            username: req.user.username,
-          },
-          public: req.body.public,
-          key: file.key.replace("raw/", ""),
-          originalFileName: file.originalname,
-        }).save();
-        return image;
-      })
+    const { images, public } = req.body;
+
+    const imageDocs = await Promise.all(
+      images.map(
+        (image) =>
+          new Image({
+            user: {
+              _id: req.user.id,
+              name: req.user.name,
+              username: req.user.username,
+            },
+            public,
+            key: image.imageKey,
+            originalFileName: image.originalname,
+          })
+      )
     );
-    res.json(result);
+    res.json(imageDocs);
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: err.message });
   }
 });
+// imageRouter.post("/", upload.array("image", 5), async (req, res) => {
+//   // 유저정보, public유무 확인
+//   try {
+//     if (!req.user) throw new Error("권한이 없습니다.");
+//     const result = await Promise.all(
+//       req.files.map(async (file) => {
+//         const image = await new Image({
+//           user: {
+//             // id로 불러내면 _id로 저장된 ObjectId에서 자동으로 String형태로 전환된다.
+//             // 근데 _id는 ObjectId가 type인데 string으로 저장해도 되냐? 몽구스가 알아서 처리해준다
+//             // 그리고 ObjectId로 안하면 string으로 되버리기 때문에 용량이 더 커지게 된다 ObjectId가 더 효율적
+//             _id: req.user.id,
+//             name: req.user.name,
+//             username: req.user.username,
+//           },
+//           public: req.body.public,
+//           key: file.key.replace("raw/", ""),
+//           originalFileName: file.originalname,
+//         }).save();
+//         return image;
+//       })
+//     );
+//     res.json(result);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(400).json({ message: err.message });
+//   }
+// });
 imageRouter.get("/", async (req, res) => {
   // public 이미지 제공
   try {
