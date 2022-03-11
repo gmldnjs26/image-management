@@ -31,8 +31,8 @@
 }
 
 .image-preview {
-  width: 30%;
-  max-height: 190px;
+  width: 120px;
+  height: 120px;
   opacity: 1;
   margin-top: 0.5rem;
   display: block;
