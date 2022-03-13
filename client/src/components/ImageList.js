@@ -45,7 +45,7 @@ const ImageList = () => {
       <img
         key={image.key}
         alt=""
-        src={`https://first-image-storage.s3.ap-northeast-1.amazonaws.com/raw/${image.key}`}
+        src={`https://first-image-storage.s3.ap-northeast-1.amazonaws.com/w140/${image.key}`}
       />
     </Link>
   ));
