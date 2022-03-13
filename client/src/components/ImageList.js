@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ImageContext } from "../context/ImageContext";
 import "./ImageList.css";
+import Image from "./Image";
 
 const ImageList = () => {
   const {
@@ -42,10 +43,8 @@ const ImageList = () => {
       to={`/images/${image._id}`}
       ref={index === images.length - 5 ? elementRef : undefined}
     >
-      <img
-        key={image.key}
-        alt=""
-        src={`https://first-image-storage.s3.ap-northeast-1.amazonaws.com/w140/${image.key}`}
+      <Image
+        imageUrl={`https://first-image-storage.s3.ap-northeast-1.amazonaws.com/w140/${image.key}`}
       />
     </Link>
   ));
