@@ -44,7 +44,7 @@ const ImageList = () => {
       ref={index === images.length - 5 ? elementRef : undefined}
     >
       <Image
-        imageUrl={`https://first-image-storage.s3.ap-northeast-1.amazonaws.com/w140/${image.key}`}
+        imageUrl={`https://d1nmztrpbgosqx.cloudfront.net/w140/${image.key}`}
       />
     </Link>
   ));
