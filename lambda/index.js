@@ -24,7 +24,7 @@ exports.handler = async (event) => {
 
           const resizedImage = await sharp(image.Body)
             .rotate()
-            .resize(width)
+            .resize({ width: width, height: width, fit: "outside" }) // 가로 세로 비율을 생각해서 더 작은 친구를 width에 맞춰 축소한다.
             .toBuffer();
           await s3
             .putObject({
