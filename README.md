@@ -2,6 +2,10 @@
 
 ### Reactjs + Nodejs(Express) + MongoDB + AWS(S3, Lambda)
 
+![image](https://user-images.githubusercontent.com/46416157/158598085-6db07fcf-0c42-4ede-bf2d-37959c49c17b.png)
+
+
+
 ### 디렉터리 구조
 
 ```bash
