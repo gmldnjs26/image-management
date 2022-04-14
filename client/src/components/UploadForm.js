@@ -18,7 +18,7 @@ const UploadForm = () => {
   const imageSelectHandler = async (e) => {
     const imageFiles = e.target.files;
     setFiles(imageFiles);
-
+    // 병렬처리
     const imagePreviews = await Promise.all(
       [...imageFiles].map((imageFile) => {
         return new Promise((resolve, reject) => {
